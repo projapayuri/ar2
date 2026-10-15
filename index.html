@@ -1,17 +1,116 @@
 <!DOCTYPE html>
-<html lang="ja">
-
+<html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <script src="https://aframe.io/releases/1.8.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-physics-system@v4.2.4/dist/aframe-physics-system.min.js"></script>
 </head>
-
 <body>
-    <a-scene>
-        <a-box position="0 0 -3" color="skyblue">
-        </a-box>
-    </a-scene>
-</body>
+    <a-scene
+        physics="gravity:-9.8"
+        cursor="rayOrigin:mouse"
+        raycaster="objects: .clickable"
+    >
+        <a-sky color="steelblue"></a-sky>
+        <a-plane
+            rotation="-90 0 0"
+            width="10"
+            height="10"
+            color="darkseagreen"
+            static-body
+        ></a-plane>
 
+        <a-sphere
+            position="0 5 4"
+            radius="0.7"
+            color="skyblue"
+            dynamic-body
+            id="ball"
+            class="clickable"
+        ></a-sphere>
+
+        <a-box
+            position="0 1.1 -2"
+            width="2"
+            height="2"
+            depth="0.2"
+            dynamic-body
+            class="target"
+        ></a-box>
+        <a-box
+            position="0 1.1 -1"
+            width="2"
+            height="2"
+            depth="0.2"
+            dynamic-body
+            class="target"
+        ></a-box>
+        <a-box
+            position="0 1.1 0"
+            width="2"
+            height="2"
+            depth="0.2"
+            dynamic-body
+            class="target"
+        ></a-box>
+        <a-box
+            position="0 1.1 1"
+            width="2"
+            height="2"
+            depth="0.2"
+            dynamic-body
+            class="target"
+        ></a-box>
+        <a-box
+            position="0 1.1 2"
+            width="2"
+            height="2"
+            depth="0.2"
+            dynamic-body
+            class="target"
+        ></a-box>
+
+        <a-entity
+            position="5 1 5"
+            rotation="0 45 0"
+        >
+            <a-camera
+            id="camera"
+            ></a-camera>
+        </a-entity>
+    </a-scene>
+
+    <script>
+        const ball = document.getElementById("ball");
+        const camera = document.getElementById("camera");
+
+        function shootBall(){
+            const direction = new THREE.Vector3();
+
+            camera.object3D.getWorldDirection(direction);
+
+            power = -500;
+            ball.body.applyImpulse(
+                new CANNON.Vec3(
+                    direction.x * power,
+                    direction.y * power,
+                    direction.z * power
+                )
+            )
+        }
+
+        ball.addEventListener("click", shootBall);
+
+        function hit(event){
+            const enemy = event.detail.body.el;
+
+            if(enemy.classList.contains("target")){
+                enemy.setAttribute("color","red");
+            }
+        }
+        ball.addEventListener("collide", hit);
+    </script>
+</body>
 </html>
